@@ -23,14 +23,14 @@ class BackTrack():
         for value in self.order_domain_values(var, assignment):
             if self.consistent(value, assignment):
                 assignment.append(value)
-            inferences = self.inference(var,value)
-            if inferences != 'failure':
-                assignment.append(inferences)
-                result = self.backtrack(assignment)
-                if result != 'failure':
-                    return result
+            #inferences = self.inference(var,value)
+            #if inferences != 'failure':
+                #assignment.append(inferences)
+            result = self.backtrack(assignment)
+            if result != 'failure':
+                return result
             assignment.remove(value)
-            assignment.remove(inferences)
+            #assignment.remove(inferences)
         return 'failure'
 
     def select_unassigned_variable(self, assignment: Assignment, csp):
