@@ -14,15 +14,8 @@ class Assignment():
         self.rows = rows
         self.cols = cols
 
-
-        max, min = (-1,-1)
-        if rows >= cols:
-            max = rows
-        else:
-            max = cols
-
         self.horz = [[0 for i in range(cols-1)] for j in range(rows)]
-        self.horz = [[0 for i in range(cols)] for j in range(rows-1)]
+        self.vert = [[0 for i in range(cols)] for j in range(rows-1)]
         # -
         for i in range(0, rows):
             for j in range(0, cols-1):
@@ -32,7 +25,7 @@ class Assignment():
         # |
         for j in range(0, cols):
             for i in range(0, rows-1):
-                var = Var(i,j, 0)
+                var = Var(i,j, 1)
                 self.vert[i][j] = var
                 self.variables.append(var)
 
