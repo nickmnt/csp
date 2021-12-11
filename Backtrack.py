@@ -61,8 +61,8 @@ class BackTrack():
                     neg_sum += 1
             if plus_sum != self.row_vals[i]:
                 return False
-            if neg_sum != self.col_vals[i]:
-                return True
+            if neg_sum != self.row_nvals[i]:
+                return False
 
         #Like before, just do it for columns
         for i in range(0, self.cols):
@@ -73,8 +73,8 @@ class BackTrack():
                     plus_sum += 1
                 if assignment.data[j][i] == -1:
                     neg_sum += 1
-            if plus_sum != self.row_vals[i]:
+            if plus_sum != self.col_vals[i]:
                 return False
-            if neg_sum != self.col_vals[i]:
-                return True
+            if neg_sum != self.col_nvals[i]:
+                return False
 
