@@ -78,3 +78,4 @@ class BackTrack():
             if neg_sum != self.col_nvals[i]:
                 return False
 
+        return True
