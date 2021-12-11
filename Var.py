@@ -4,7 +4,7 @@ class Var():
     # 0 - _
     # 1 - |
     type = -1
-    value = 0
+    value = -100
 
     def __init__(self,r,c,type):
         self.r = r
