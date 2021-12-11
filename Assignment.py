@@ -31,9 +31,9 @@ class Assignment():
 
     def append(self, val: Var):
         if val.type == 0:
-            self.horz[val.r][val.c] = val.value
+            self.horz[val.r][val.c].value = val.value
         elif val.type == 1:
-            self.vert[val.r][val.c] = val.value
+            self.vert[val.r][val.c].value = val.value
 
     def remove(self, val: Var):
         if val.type == 0:
@@ -90,45 +90,47 @@ class Assignment():
         if self.check_c_range(c):
             val = self.horz[r][c].value
             if val == 1:
-                return False
+                return True
         
         #self vert 
         if self.check_r_range(r):
             val = self.vert[r][c].value
             if val == 1:
-                return False
+                return True
 
         #If upper vert exists
         if self.check_r_range(r-1):
             val = self.vert[r-1][c].value
             if val == -1:
-                return False
+                return True
         #If left horz exists
         if self.check_c_range(c-1) >= 0:
             val = self.horz[r][c-1].value
             if val == -1:
-                return False
+                return True
+        return False
 
     def is_negative(self, r, c):
         #self horz
         if self.check_c_range(c):
             val = self.horz[r][c].value
             if val == -1:
-                return False
+                return True
         
         #self vert 
         if self.check_r_range(r):
             val = self.vert[r][c].value
             if val == -1:
-                return False
+                return True
 
         #If upper vert exists
         if self.check_r_range(r-1):
             val = self.vert[r-1][c].value
             if val == 1:
-                return False
+                return True
         #If left horz exists
         if self.check_c_range(c-1) >= 0:
             val = self.horz[r][c-1].value
             if val == 1:
-                return False
+                return True
+        return False

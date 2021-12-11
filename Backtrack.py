@@ -15,27 +15,29 @@ class BackTrack():
         return self.backtrack(Assignment(self.csp.rows, self.csp.cols))
 
     #Returns a solution or failure
-    def backtrack(self, assignment: list):
+    def backtrack(self, assignment: Assignment):
         if self.complete(assignment):
             return assignment
 
         var = self.select_unassigned_variable(assignment, self.csp)
         for value in self.order_domain_values(var, assignment):
             var.value = value
-            if self.consistent(value, assignment):
+            if self.consistent(var, assignment):
                 assignment.append(var)
-            #inferences = self.inference(var,value)
-            #if inferences != 'failure':
-                #assignment.append(inferences)
-            result = self.backtrack(assignment)
-            if result != 'failure':
-                return result
-            assignment.remove(value)
-            #assignment.remove(inferences)
+                #inferences = self.inference(var,value)
+                #if inferences != 'failure':
+                    #assignment.append(inferences)
+                result = self.backtrack(assignment)
+                if result != 'failure':
+                    return result
+                assignment.remove(var)
+                #assignment.remove(inferences)
         return 'failure'
 
     def select_unassigned_variable(self, assignment: Assignment, csp):
-        unassigned = list(filter(lambda x : x.value != -100 ,assignment.variables))
+        unassigned = list(filter(lambda x : x.value == -100 ,assignment.variables))
+        if len(unassigned) == 0:
+            return None
         min = unassigned[0]
 
         for var in unassigned:
@@ -82,4 +84,11 @@ class BackTrack():
         return True
 
     def order_domain_values(self, var: Var, assignment: Assignment):
+        if var is None:
+            return []
         return [0,1,-1]
+
+    def consistent(self, var: Var, assignment: Assignment):
+        if assignment.is_positive(var.r, var.c) or assignment.is_negative(var.r, var.c):
+            return False
+        return True
