@@ -49,15 +49,15 @@ class BackTrack():
 
         return min
                 
-    def complete(self, assignment):
+    def complete(self, assignment: Assignment):
         #Check the first row, get sum of +, sum of -, check rules, so on...
         for i in range(0, self.rows):
             plus_sum = 0
             neg_sum = 0
             for j in range(0, self.cols):
-                if assignment.data[i][j] == 1:
+                if assignment.is_positive(i,j):
                     plus_sum += 1
-                if assignment.data[i][j] == -1:
+                if assignment.is_negative(i,j):
                     neg_sum += 1
             if plus_sum != self.row_vals[i]:
                 return False
@@ -69,9 +69,9 @@ class BackTrack():
             plus_sum = 0
             neg_sum = 0
             for j in range(0, self.rows):
-                if assignment.data[j][i] == 1:
+                if assignment.is_positive(i,j):
                     plus_sum += 1
-                if assignment.data[j][i] == -1:
+                if assignment.is_negative(i,j):
                     neg_sum += 1
             if plus_sum != self.col_vals[i]:
                 return False

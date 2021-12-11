@@ -91,3 +91,51 @@ class Assignment():
             return [0]
         
         return [-1,0,1]
+
+    def is_positive(self, r, c):
+        #self horz
+        if self.check_c_range(c):
+            val = self.horz[r][c].value
+            if val == 1:
+                return False
+        
+        #self vert 
+        if self.check_r_range(r):
+            val = self.vert[r][c].value
+            if val == 1:
+                return False
+
+        #If upper vert exists
+        if self.check_r_range(r-1):
+            val = self.vert[r-1][c].value
+            if val == -1:
+                return False
+        #If left horz exists
+        if self.check_c_range(c-1) >= 0:
+            val = self.horz[r][c-1].value
+            if val == -1:
+                return False
+
+    def is_negative(self, r, c):
+        #self horz
+        if self.check_c_range(c):
+            val = self.horz[r][c].value
+            if val == -1:
+                return False
+        
+        #self vert 
+        if self.check_r_range(r):
+            val = self.vert[r][c].value
+            if val == -1:
+                return False
+
+        #If upper vert exists
+        if self.check_r_range(r-1):
+            val = self.vert[r-1][c].value
+            if val == 1:
+                return False
+        #If left horz exists
+        if self.check_c_range(c-1) >= 0:
+            val = self.horz[r][c-1].value
+            if val == 1:
+                return False
