@@ -35,11 +35,11 @@ class Assignment():
         elif val.type == 1:
             self.vert[val.r][val.c] = val.value
 
-    def delete_action(self, val: Var):
+    def remove(self, val: Var):
         if val.type == 0:
-            self.horz[val.r][val.c] = 0
+            self.horz[val.r][val.c].value = -100
         elif val.type == 1:
-            self.vert[val.r][val.c] = 0
+            self.vert[val.r][val.c].value = -100
 
     def check_r_range(self, r):
         return r < self.rows - 1 and r >= 0

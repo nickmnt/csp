@@ -21,8 +21,9 @@ class BackTrack():
 
         var = self.select_unassigned_variable(assignment, self.csp)
         for value in self.order_domain_values(var, assignment):
+            var.value = value
             if self.consistent(value, assignment):
-                assignment.append(value)
+                assignment.append(var)
             #inferences = self.inference(var,value)
             #if inferences != 'failure':
                 #assignment.append(inferences)
