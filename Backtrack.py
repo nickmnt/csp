@@ -79,3 +79,6 @@ class BackTrack():
                 return False
 
         return True
+
+    def order_domain_values(self, var: Var, assignment: Assignment):
+        return [0,1,-1]
