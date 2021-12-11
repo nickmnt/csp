@@ -1,4 +1,6 @@
+from Assignment import Assignment
 from Csp import Csp
+from Var import Var
 
 
 class BackTrack():
@@ -30,6 +32,22 @@ class BackTrack():
             assignment.remove(value)
             assignment.remove(inferences)
         return 'failure'
+
+    def select_unassigned_variable(self, assignment: Assignment, csp):
+        unassigned = filter(lambda x : x.value != -100 ,assignment.variables)
+        min = unassigned[0]
+
+        for var in unassigned:
+            if var == min:
+                continue
+            r = len(assignment.remaining_possible_values(var))
+            n = len(assignment.remaining_possible_values(min))
+
+            if r < n:
+                min = var
+            #else if r= n
+
+        return min
                 
     def complete(self, assignment):
         #Check the first row, get sum of +, sum of -, check rules, so on...

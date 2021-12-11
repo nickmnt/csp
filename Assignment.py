@@ -47,5 +47,47 @@ class Assignment():
             self.horz[val.r][val.c] = 0
         elif val.type == 1:
             self.vert[val.r][val.c] = 0
+
+    def check_r_range(self, r):
+        return r < self.rows - 1 and r >= 0
+
+    def check_c_range(self, c):
+        return c < self.cols - 1 and c >= 0
             
+    def check(self, r,c):
+        #self horz
+        if self.check_c_range(c):
+            val = self.horz[r][c].value
+            if val != -100 and val != 0:
+                return False
         
+        #self vert 
+        if self.check_r_range(r):
+            val = self.vert[r][c].value
+            if val != -100 and val != 0:
+                return False
+
+        #If upper vert exists
+        if self.check_r_range(r-1):
+            val = self.vert[r-1][c].value
+            if val != -100 and val != 0:
+                return False
+        #If left horz exists
+        if self.check_c_range(c-1) >= 0:
+            val = self.horz[r][c-1].value
+            if val != -100 and val != 0:
+                return False
+
+        return True
+
+    def remaining_possible_values(self, var: Var):
+        if not self.check(var.r,var.c):
+            return [0]
+        #horz
+        if var.type == 0 and not self.check(var.r,var.c+1):
+            return [0]
+        #vert
+        if var.type == 1 and not self.check(var.r+1,var.c):
+            return [0]
+        
+        return [-1,0,1]
