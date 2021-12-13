@@ -29,6 +29,7 @@ if __name__ == "__main__":
 
     data = [[0 for i in range(cols)] for j in range(rows)]
     mp = [[[] for i in range(cols)] for j in range(rows)]
+    variables = []
     for i in range(rows):
         nums = [int(x) for x in input().split()]
         for j in range(cols):
@@ -38,6 +39,7 @@ if __name__ == "__main__":
                     var = Var(i, j-1, 0)
                     mp[i][j-1].append(var)
                     mp[i][j].append(var)
+                    variables.append(var)
                 else:
                     data[i][j] = 'l'
             elif nums[j] == 1:
@@ -46,12 +48,13 @@ if __name__ == "__main__":
                     var = Var(i, j, 1)
                     mp[i-1][j].append(var)
                     mp[i][j].append(var)
+                    variables.append(var)
                 else:
                     data[i][j] = 'u'
             else:
                 data[i][j] = 'x'
 
-    csp = Csp(rows, cols, row_vals, col_vals, row_nvals, col_nvals, data, mp)
+    csp = Csp(rows, cols, row_vals, col_vals, row_nvals, col_nvals, data, mp, variables)
     backtrack = BackTrack(csp)
     print(backtrack.search())
 

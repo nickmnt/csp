@@ -12,3 +12,6 @@ class Var():
         self.r = r
         self.c = c
         self.type = type
+
+    def remaining(self):
+        return len(self.domain) - len(self.removed_domain)
