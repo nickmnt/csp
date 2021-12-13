@@ -1,3 +1,4 @@
+from Inference import Inference
 from Var import Var
 
 
@@ -5,8 +6,8 @@ class Assignment():
     rows = -1
     cols = -1
     variables = []
-    horz = []
-    vert = []
+    horz: "list[list[Var]]" = None
+    vert: "list[list[Var]]" = None
     # row , col, direction: 'R', 'L', 'U', 'D'
     #last_action = (-1,-1,'')
 
@@ -29,11 +30,11 @@ class Assignment():
                 self.vert[i][j] = var
                 self.variables.append(var)
 
-    def append(self, val: Var):
+    def append(self, val: Var, value):
         if val.type == 0:
-            self.horz[val.r][val.c].value = val.value
+            self.horz[val.r][val.c].value = value
         elif val.type == 1:
-            self.vert[val.r][val.c].value = val.value
+            self.vert[val.r][val.c].value = value
 
     def remove(self, val: Var):
         if val.type == 0:
@@ -74,6 +75,7 @@ class Assignment():
         return True
 
     def remaining_possible_values(self, var: Var):
+        return self.domain
         if not self.check(var.r,var.c):
             return [0]
         #horz
@@ -134,3 +136,34 @@ class Assignment():
             if val == 1:
                 return True
         return False
+
+    def claim(self, r, c, inferences: list):
+        #self horz
+        if self.check_c_range(c):
+            var = self.horz[r][c]
+            if -1 not in var.removed_domain:
+                inferences.append(Inference(var, -1))
+            if 1 not in var.removed_domain:
+                inferences.append(Inference(var, 1))
+        #self vert 
+        if self.check_r_range(r):
+            var = self.vert[r][c]
+            if -1 not in var.removed_domain:
+                inferences.append(Inference(var, -1))
+            if 1 not in var.removed_domain:
+                inferences.append(Inference(var, 1))
+
+        #If upper vert exists
+        if self.check_r_range(r-1):
+            var = self.vert[r-1][c]
+            if -1 not in var.removed_domain:
+                inferences.append(Inference(var, -1))
+            if 1 not in var.removed_domain:
+                inferences.append(Inference(var, 1))
+        #If left horz exists
+        if self.check_c_range(c-1) >= 0:
+            var = self.horz[r][c-1]
+            if -1 not in var.removed_domain:
+                inferences.append(Inference(var, -1))
+            if 1 not in var.removed_domain:
+                inferences.append(Inference(var, 1))

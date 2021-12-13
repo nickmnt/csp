@@ -20,13 +20,14 @@ class BackTrack():
             return assignment
 
         var = self.select_unassigned_variable(assignment, self.csp)
+        # if var is not None:
+            # print('r: %d c: %d, modes: %d\n' % (var.r, var.c, len(self.order_domain_values(var, assignment))))
         for value in self.order_domain_values(var, assignment):
-            var.value = value
-            if self.consistent(var, assignment):
-                assignment.append(var)
-                #inferences = self.inference(var,value)
-                #if inferences != 'failure':
-                    #assignment.append(inferences)
+            if self.consistent(var, value, assignment):
+                assignment.append(var, value)
+                inferences = self.inference(var,value, assignment)
+                if inferences != 'failure':
+                    assignment.append(inferences)
                 result = self.backtrack(assignment)
                 if result != 'failure':
                     return result
@@ -68,17 +69,17 @@ class BackTrack():
                 return False
 
         #Like before, just do it for columns
-        for i in range(0, self.csp.cols):
+        for j in range(0, self.csp.cols):
             plus_sum = 0
             neg_sum = 0
-            for j in range(0, self.csp.rows):
+            for i in range(0, self.csp.rows):
                 if assignment.is_positive(i,j):
                     plus_sum += 1
                 if assignment.is_negative(i,j):
                     neg_sum += 1
-            if plus_sum != self.csp.col_vals[i]:
+            if plus_sum != self.csp.col_vals[j]:
                 return False
-            if neg_sum != self.csp.col_nvals[i]:
+            if neg_sum != self.csp.col_nvals[j]:
                 return False
 
         return True
@@ -88,7 +89,13 @@ class BackTrack():
             return []
         return [0,1,-1]
 
-    def consistent(self, var: Var, assignment: Assignment):
-        if assignment.is_positive(var.r, var.c) or assignment.is_negative(var.r, var.c):
-            return False
-        return True
+    def consistent(self, var, value, assignment: Assignment):
+        l = len(assignment.remaining_possible_values(var))
+        if l == 3:
+            return True
+        return False
+
+    def inference(var, value, assignment):
+        # It blocks some
+
+        # It stops some from being same charge

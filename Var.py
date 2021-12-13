@@ -5,6 +5,8 @@ class Var():
     # 1 - |
     type = -1
     value = -100
+    domain = [0,1,-1]
+    removed_domain = []
 
     def __init__(self,r,c,type):
         self.r = r
