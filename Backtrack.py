@@ -95,7 +95,6 @@ class BackTrack():
             return True
         return False
 
-    def inference(var, value, assignment):
+    # def inference(var, value, assignment):
         # It blocks some
-
         # It stops some from being same charge
