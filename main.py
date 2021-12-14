@@ -28,7 +28,7 @@ if __name__ == "__main__":
         col_nvals[i] = int(nums[i])
 
     data = [[0 for i in range(cols)] for j in range(rows)]
-    mp = [[[] for i in range(cols)] for j in range(rows)]
+    mp = [[None for i in range(cols)] for j in range(rows)]
     variables = []
     for i in range(rows):
         nums = [int(x) for x in input().split()]
@@ -38,8 +38,8 @@ if __name__ == "__main__":
                 if j-1 >= 0 and data[i][j-1] == 'l':
                     data[i][j] = 'r'
                     var = Var(i, j-1, 0)
-                    mp[i][j-1].append(var)
-                    mp[i][j].append(var)
+                    mp[i][j-1] = var
+                    mp[i][j] = var
                     variables.append(var)
                 else:
                     data[i][j] = 'l'
@@ -48,8 +48,8 @@ if __name__ == "__main__":
                 if i-1 >= 0 and data[i-1][j] == 'u':
                     data[i][j] = 'd'
                     var = Var(i-1, j, 1)
-                    mp[i-1][j].append(var)
-                    mp[i][j].append(var)
+                    mp[i-1][j] = var
+                    mp[i][j] = var
                     variables.append(var)
                 else:
                     data[i][j] = 'u'

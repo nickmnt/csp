@@ -24,37 +24,31 @@ class Csp():
         self.variables = variables
 
     def claim(self, r, c, inferences: list):
-        l = self.mp[r][c]
-
-        for var in l:
-            if -1 not in var.removed_domain:
-                inferences.append(Inference(var, -1))
-            if 1 not in var.removed_domain:
-                inferences.append(Inference(var, 1))
+        var = self.mp[r][c]
+        if -1 not in var.removed_domain:
+            inferences.append(Inference(var, -1))
+        if 1 not in var.removed_domain:
+            inferences.append(Inference(var, 1))
 
     def claim_charge(self, r, c, charge, inferences: list):
 
         #left
         if c-1 >= 0:
-            l = self.mp[r][c-1]
-            for var in l:
-                var.revoke_charge_claim(r, c-1, charge, inferences)
+            var = self.mp[r][c-1]
+            var.revoke_charge_claim(r, c-1, charge, inferences)
 
         #right
         if c+1 < self.cols:
-            l = self.mp[r][c+1]
-            for var in l:
-                var.revoke_charge_claim(r, c+1, charge, inferences)
+            var = self.mp[r][c+1]
+            var.revoke_charge_claim(r, c+1, charge, inferences)
         #up
         if r-1 >= 0:
-            l = self.mp[r-1][c]
-            for var in l:
-                var.revoke_charge_claim(r-1, c, charge, inferences)
+            var = self.mp[r-1][c]
+            var.revoke_charge_claim(r-1, c, charge, inferences)
         #down
         if r+1 < self.rows:
-            l = self.mp[r+1][c]
-            for var in l:
-                var.revoke_charge_claim(r+1, c, charge, inferences)
+            var = self.mp[r+1][c]
+            var.revoke_charge_claim(r+1, c, charge, inferences)
 
     def append(self, var: Var, value: int):
         r1, c1 = var.second_block()

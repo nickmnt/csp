@@ -97,7 +97,7 @@ class BackTrack():
             for j in range(0, self.csp.cols):
                 if self.csp.data[i][j] == '+':
                     plus_sum += 1
-                if self.csp.data[i][j] == '-':
+                elif self.csp.data[i][j] == '-':
                     neg_sum += 1
             if plus_sum != self.csp.row_vals[i]:
                 return False
@@ -111,7 +111,7 @@ class BackTrack():
             for i in range(0, self.csp.rows):
                 if self.csp.data[i][j] == '+':
                     plus_sum += 1
-                if self.csp.data[i][j] == '-':
+                elif self.csp.data[i][j] == '-':
                     neg_sum += 1
             if plus_sum != self.csp.col_vals[j]:
                 return False
@@ -129,6 +129,66 @@ class BackTrack():
         return True
         
     def inference(self, var: Var, value, assignment):
+
+        for i in range(0, self.csp.rows):
+            plus_sum = 0
+            neg_sum = 0
+            plus_candids = 0
+            neg_candids = 0
+            for j in range(0, self.csp.cols):
+                if self.csp.data[i][j] == '+':
+                    plus_sum += 1
+                elif self.csp.data[i][j] == '-':
+                    neg_sum += 1
+                elif self.csp.data[i][j] == 'l' or self.csp.data[i][j] == 'u':
+                    if 1 not in self.csp.mp[i][j].removed_domain:
+                        plus_candids += 1
+                    if -1 not in self.csp.mp[i][j].removed_domain:
+                        neg_candids += 1
+                elif self.csp.data[i][j] == 'r' or self.csp.data[i][j] == 'd':
+                    if -1 not in self.csp.mp[i][j].removed_domain:
+                        plus_candids += 1
+                    if 1 not in self.csp.mp[i][j].removed_domain:
+                        neg_candids += 1
+            if plus_sum > self.csp.row_vals[i]:
+                return 'failure'
+            if neg_sum > self.csp.row_nvals[i]:
+                return 'failure'
+            if self.csp.row_vals[i] - plus_sum > plus_candids:
+                return 'failure'
+            if self.csp.row_nvals[i] - neg_sum > neg_candids:
+                return 'failure'
+
+        #Like before, just do it for columns
+        for j in range(0, self.csp.cols):
+            plus_sum = 0
+            neg_sum = 0
+            plus_candids = 0
+            neg_candids = 0
+            for i in range(0, self.csp.rows):
+                if self.csp.data[i][j] == '+':
+                    plus_sum += 1
+                elif self.csp.data[i][j] == '-':
+                    neg_sum += 1
+                elif self.csp.data[i][j] == 'l' or self.csp.data[i][j] == 'u':
+                    if 1 not in self.csp.mp[i][j].removed_domain:
+                        plus_candids += 1
+                    if -1 not in self.csp.mp[i][j].removed_domain:
+                        neg_candids += 1
+                elif self.csp.data[i][j] == 'r' or self.csp.data[i][j] == 'd':
+                    if -1 not in self.csp.mp[i][j].removed_domain:
+                        plus_candids += 1
+                    if 1 not in self.csp.mp[i][j].removed_domain:
+                        neg_candids += 1
+            if plus_sum > self.csp.col_vals[j]:
+                return 'failure'
+            if neg_sum > self.csp.col_nvals[j]:
+                return 'failure'
+            if self.csp.col_vals[j] - plus_sum > plus_candids:
+                return 'failure'
+            if self.csp.col_nvals[j] - neg_sum > neg_candids:
+                return 'failure'
+
         # It blocks some
         inferences = []
         self.csp.claim(var.r, var.c, inferences)
