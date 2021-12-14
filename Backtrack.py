@@ -34,17 +34,9 @@ class BackTrack():
             return assignment
 
         var = self.select_unassigned_variable(assignment)
-        # if var is None:
-        #     print('None')
-        # else:
-        #     
         for value in self.order_domain_values(var, assignment):
-            #print('r:%d c:%d value: %d' % (var.r, var.c, value))
             if self.consistent(var, value, assignment):
                 self.csp.append(var, value)
-                # if self.test.value == -1 and self.test1.value == 1 and self.test2.value == 1 and self.test3.value == 1 and self.test4.value == 1 and self.test5.value == 1 and self.test6.value == 1 and self.test7.value == 1:
-                #     print(self.test8.removed_domain)
-                #     self.csp.print()
                 inferences = self.inference(var,value, assignment)
                 if inferences != 'failure':
                     self.csp.append_inferences(inferences)
