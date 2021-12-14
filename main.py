@@ -33,8 +33,9 @@ if __name__ == "__main__":
     for i in range(rows):
         nums = [int(x) for x in input().split()]
         for j in range(cols):
+            # horz
             if nums[j] == 0:
-                if j-1 >= 0 and nums[j-1] == '0':
+                if j-1 >= 0 and data[i][j-1] == 'l':
                     data[i][j] = 'r'
                     var = Var(i, j-1, 0)
                     mp[i][j-1].append(var)
@@ -42,8 +43,9 @@ if __name__ == "__main__":
                     variables.append(var)
                 else:
                     data[i][j] = 'l'
+            # vert
             elif nums[j] == 1:
-                if i-1 >= 0 and data[i-1][j] == '1':
+                if i-1 >= 0 and data[i-1][j] == 'u':
                     data[i][j] = 'd'
                     var = Var(i, j, 1)
                     mp[i-1][j].append(var)
