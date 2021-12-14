@@ -5,6 +5,8 @@ from Var import Var
 
 class BackTrack():
     csp = None
+    rows = None
+    cols = None
     # test = None
     # test1 = None
     # test2 = None
@@ -18,6 +20,8 @@ class BackTrack():
     
     def __init__(self, csp: Csp):
         self.csp = csp
+        self.rows = range(csp.rows)
+        self.cols = range(csp.cols)
 
     #Returns a solution or failure
     def search(self):
@@ -85,13 +89,17 @@ class BackTrack():
 
             if r < n:
                 min = var
+                if min.remaining() == 1:
+                    return min
             #else if r= n
 
         return min
                 
     def complete(self, assignment: Assignment):
         #Check the first row, get sum of +, sum of -, check rules, so on...
-        for i in range(0, self.csp.rows):
+        for i in self.rows:
+            if i not in self.rows:
+                continue
             plus_sum = 0
             neg_sum = 0
             for j in range(0, self.csp.cols):
@@ -105,7 +113,9 @@ class BackTrack():
                 return False
 
         #Like before, just do it for columns
-        for j in range(0, self.csp.cols):
+        for j in self.cols:
+            if j not in self.cols:
+                continue
             plus_sum = 0
             neg_sum = 0
             for i in range(0, self.csp.rows):
@@ -130,7 +140,26 @@ class BackTrack():
         
     def inference(self, var: Var, value, assignment):
 
-        for i in range(0, self.csp.rows):
+
+        # It blocks some
+        inferences = []
+        self.csp.claim(var.r, var.c, inferences)
+        r1,c1 = var.second_block()
+        self.csp.claim(r1,c1, inferences)
+        # It stops some from being same charge
+        if value != 0:
+            self.csp.claim_charge(var.r, var.c, value, inferences)
+            self.csp.claim_charge(r1,c1, -1*value, inferences)
+
+        rows = set()
+        cols = set()
+        for i in inferences:
+            rows.add(i.var.r)
+            cols.add(i.var.c)
+        self.rows = rows
+        self.cols = cols
+
+        for i in self.rows:
             plus_sum = 0
             neg_sum = 0
             plus_candids = 0
@@ -160,7 +189,7 @@ class BackTrack():
                 return 'failure'
 
         #Like before, just do it for columns
-        for j in range(0, self.csp.cols):
+        for j in self.cols:
             plus_sum = 0
             neg_sum = 0
             plus_candids = 0
@@ -189,13 +218,4 @@ class BackTrack():
             if self.csp.col_nvals[j] - neg_sum > neg_candids:
                 return 'failure'
 
-        # It blocks some
-        inferences = []
-        self.csp.claim(var.r, var.c, inferences)
-        r1,c1 = var.second_block()
-        self.csp.claim(r1,c1, inferences)
-        # It stops some from being same charge
-        if value != 0:
-            self.csp.claim_charge(var.r, var.c, value, inferences)
-            self.csp.claim_charge(r1,c1, -1*value, inferences)
         return inferences
