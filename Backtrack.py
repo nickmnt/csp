@@ -5,13 +5,43 @@ from Var import Var
 
 class BackTrack():
     csp = None
-    
+    # test = None
+    # test1 = None
+    # test2 = None
+    # test3 = None
+    # test4 = None
+    # test5 = None
+    # test6 = None
+    # test7 = None
+    # test8 = None
+    # test9 = None
     
     def __init__(self, csp: Csp):
         self.csp = csp
 
     #Returns a solution or failure
     def search(self):
+        # for i in self.csp.variables:
+        #     if i.r == 0 and i.c == 1:
+        #         self.test = i
+        #     if i.r == 1 and i.c == 1:
+        #         self.test1 = i
+        #     if i.r == 1 and i.c == 4:
+        #         self.test2 = i
+        #     if i.r == 2 and i.c == 0:
+        #         self.test3 = i
+        #     if i.r == 2 and i.c == 3:
+        #         self.test4 = i
+        #     if i.r == 2 and i.c == 5:
+        #         self.test5 = i
+        #     if i.r == 3 and i.c == 2:
+        #         self.test6 = i
+        #     if i.r == 4 and i.c == 0:
+        #         self.test7 = i
+        #     if i.r == 4 and i.c == 2:
+        #         self.test8 = i
+        #     if i.r == 5 and i.c == 3:
+        #         self.test9 = i
         return self.backtrack(Assignment(self.csp.rows, self.csp.cols))
 
     #Returns a solution or failure
@@ -19,23 +49,29 @@ class BackTrack():
         if self.complete(assignment):
             return assignment
 
-        var = self.select_unassigned_variable(assignment, self.csp)
-        # if var is not None:
-            # print('r: %d c: %d, modes: %d\n' % (var.r, var.c, len(self.order_domain_values(var, assignment))))
+        var = self.select_unassigned_variable(assignment)
+        # if var is None:
+        #     print('None')
+        # else:
+        #     
         for value in self.order_domain_values(var, assignment):
+            #print('r:%d c:%d value: %d' % (var.r, var.c, value))
             if self.consistent(var, value, assignment):
-                assignment.append(var, value)
+                self.csp.append(var, value)
+                # if self.test.value == -1 and self.test1.value == 1 and self.test2.value == 1 and self.test3.value == 1 and self.test4.value == 1 and self.test5.value == 1 and self.test6.value == 1 and self.test7.value == 1:
+                #     print(self.test8.removed_domain)
+                #     self.csp.print()
                 inferences = self.inference(var,value, assignment)
                 if inferences != 'failure':
-                    assignment.append(inferences)
-                result = self.backtrack(assignment)
-                if result != 'failure':
-                    return result
-                assignment.remove(var)
-                #assignment.remove(inferences)
+                    self.csp.append_inferences(inferences)
+                    result = self.backtrack(assignment)
+                    if result != 'failure':
+                        return result
+                    self.csp.remove_inferences(inferences)
+                self.csp.remove(var, value)
         return 'failure'
 
-    def select_unassigned_variable(self, assignment: Assignment, csp):
+    def select_unassigned_variable(self, assignment: Assignment):
         unassigned = list(filter(lambda x : x.value == -100 ,self.csp.variables))
         if len(unassigned) == 0:
             return None
@@ -44,8 +80,8 @@ class BackTrack():
         for var in unassigned:
             if var == min:
                 continue
-            r = len(var.remaining())
-            n = len(min.remaining())
+            r = var.remaining()
+            n = min.remaining()
 
             if r < n:
                 min = var
@@ -92,6 +128,14 @@ class BackTrack():
     def consistent(self, var: Var, value, assignment: Assignment):
         return True
         
-    # def inference(var, value, assignment):
+    def inference(self, var: Var, value, assignment):
         # It blocks some
+        inferences = []
+        self.csp.claim(var.r, var.c, inferences)
+        r1,c1 = var.second_block()
+        self.csp.claim(r1,c1, inferences)
         # It stops some from being same charge
+        if value != 0:
+            self.csp.claim_charge(var.r, var.c, value, inferences)
+            self.csp.claim_charge(r1,c1, -1*value, inferences)
+        return inferences

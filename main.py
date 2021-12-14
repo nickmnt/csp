@@ -47,7 +47,7 @@ if __name__ == "__main__":
             elif nums[j] == 1:
                 if i-1 >= 0 and data[i-1][j] == 'u':
                     data[i][j] = 'd'
-                    var = Var(i, j, 1)
+                    var = Var(i-1, j, 1)
                     mp[i-1][j].append(var)
                     mp[i][j].append(var)
                     variables.append(var)
@@ -58,5 +58,9 @@ if __name__ == "__main__":
 
     csp = Csp(rows, cols, row_vals, col_vals, row_nvals, col_nvals, data, mp, variables)
     backtrack = BackTrack(csp)
-    print(backtrack.search())
+    print()
+    if backtrack.search() != 'failure':
+        csp.print()
+    else:
+        print('failure')
 
