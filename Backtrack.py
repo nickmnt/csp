@@ -1,5 +1,6 @@
 from Assignment import Assignment
 from Csp import Csp
+from Inference import Inference
 from Var import Var
 
 
@@ -25,27 +26,6 @@ class BackTrack():
 
     #Returns a solution or failure
     def search(self):
-        # for i in self.csp.variables:
-        #     if i.r == 0 and i.c == 1:
-        #         self.test = i
-        #     if i.r == 1 and i.c == 1:
-        #         self.test1 = i
-        #     if i.r == 1 and i.c == 4:
-        #         self.test2 = i
-        #     if i.r == 2 and i.c == 0:
-        #         self.test3 = i
-        #     if i.r == 2 and i.c == 3:
-        #         self.test4 = i
-        #     if i.r == 2 and i.c == 5:
-        #         self.test5 = i
-        #     if i.r == 3 and i.c == 2:
-        #         self.test6 = i
-        #     if i.r == 4 and i.c == 0:
-        #         self.test7 = i
-        #     if i.r == 4 and i.c == 2:
-        #         self.test8 = i
-        #     if i.r == 5 and i.c == 3:
-        #         self.test9 = i
         return self.backtrack(Assignment(self.csp.rows, self.csp.cols))
 
     #Returns a solution or failure
@@ -97,9 +77,7 @@ class BackTrack():
                 
     def complete(self, assignment: Assignment):
         #Check the first row, get sum of +, sum of -, check rules, so on...
-        for i in self.rows:
-            if i not in self.rows:
-                continue
+        for i in range(self.csp.rows):
             plus_sum = 0
             neg_sum = 0
             for j in range(0, self.csp.cols):
@@ -113,9 +91,7 @@ class BackTrack():
                 return False
 
         #Like before, just do it for columns
-        for j in self.cols:
-            if j not in self.cols:
-                continue
+        for j in range(self.csp.cols):
             plus_sum = 0
             neg_sum = 0
             for i in range(0, self.csp.rows):
@@ -187,6 +163,32 @@ class BackTrack():
                 return 'failure'
             if self.csp.row_nvals[i] - neg_sum > neg_candids:
                 return 'failure'
+            exact_plus = self.csp.row_vals[i] - plus_sum == plus_candids
+            exact_neg = self.csp.row_nvals[i] - neg_sum == neg_candids
+            if exact_plus or exact_neg:
+                for j in range(0, self.csp.cols):
+                    if self.csp.data[i][j] == 'l' or self.csp.data[i][j] == 'u':
+                        if exact_plus and 1 not in self.csp.mp[i][j].removed_domain:
+                            if not self.csp.mp[i][j].same_row() and -1 not in self.csp.mp[i][j].removed_domain:
+                                 inferences.append(Inference(self.csp.mp[i][j], -1))
+                            if 0 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 0))
+                        if exact_neg and -1 not in self.csp.mp[i][j].removed_domain:
+                            if not self.csp.mp[i][j].same_row() and 1 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 1))
+                            if 0 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 0))
+                    elif self.csp.data[i][j] == 'r' or self.csp.data[i][j] == 'd':
+                        if exact_plus and -1 not in self.csp.mp[i][j].removed_domain:
+                            if not self.csp.mp[i][j].same_row() and 1 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 1))
+                            if 0 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 0))
+                        if exact_neg and 1 not in self.csp.mp[i][j].removed_domain:
+                            if not self.csp.mp[i][j].same_row() and -1 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], -1))
+                            if 0 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 0))
 
         #Like before, just do it for columns
         for j in self.cols:
@@ -217,5 +219,31 @@ class BackTrack():
                 return 'failure'
             if self.csp.col_nvals[j] - neg_sum > neg_candids:
                 return 'failure'
+            exact_plus = self.csp.col_vals[j] - plus_sum == plus_candids
+            exact_neg = self.csp.col_nvals[j] - neg_sum == neg_candids
+            if exact_plus or exact_neg:
+                for i in range(0, self.csp.rows):
+                    if self.csp.data[i][j] == 'l' or self.csp.data[i][j] == 'u':
+                        if exact_plus and 1 not in self.csp.mp[i][j].removed_domain:
+                            if not self.csp.mp[i][j].same_col() and -1 not in self.csp.mp[i][j].removed_domain:
+                                 inferences.append(Inference(self.csp.mp[i][j], -1))
+                            if 0 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 0))
+                        if exact_neg and -1 not in self.csp.mp[i][j].removed_domain:
+                            if not self.csp.mp[i][j].same_col() and 1 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 1))
+                            if 0 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 0))
+                    elif self.csp.data[i][j] == 'r' or self.csp.data[i][j] == 'd':
+                        if exact_plus and -1 not in self.csp.mp[i][j].removed_domain:
+                            if not self.csp.mp[i][j].same_col() and 1 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 1))
+                            if 0 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 0))
+                        if exact_neg and 1 not in self.csp.mp[i][j].removed_domain:
+                            if not self.csp.mp[i][j].same_col() and -1 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], -1))
+                            if 0 not in self.csp.mp[i][j].removed_domain:
+                                inferences.append(Inference(self.csp.mp[i][j], 0))
 
         return inferences

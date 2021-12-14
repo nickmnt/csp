@@ -27,6 +27,14 @@ class Var():
             return (self.r+1, self.c)
         return None
 
+    def same_col(self):
+        r1,c1 = self.second_block()
+        return c1 == self.c
+
+    def same_row(self):
+        r1,c1 = self.second_block()
+        return c1 == self.r
+
     def revoke_charge_claim(self, r, c, charge, inferences: list):
         r1, c1 = self.second_block()
 
