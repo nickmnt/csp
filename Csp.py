@@ -73,7 +73,7 @@ class Csp():
     def append_inferences(self, inferences: "list[Inference]"):
         for i in inferences:
             if i.val not in i.var.removed_domain:
-                i.var.removed_domain.append(i.val)
+                i.var.removed_domain.add(i.val)
                 if len(i.var.removed_domain) == 3 and i.var.value == -100:
                     return False
         return True
@@ -184,16 +184,23 @@ class Csp():
 
         while len(queue) != 0:
             x_i, x_j = queue.pop()
+            # performance gain
+            if x_i.value != 0:
+               continue
+            # performance gain
             if self.revise(x_i, x_j, inferences):
                 if len(x_i.removed_domain) == 3:
                     return False
-                for x_k in x_i.constraints:
-                    if x_k is not x_j:
-                        queue.append((x_k, x_i))
+                for x_k in list(filter(lambda x_k: x_k is not x_j and x_k.value != 0, x_i.constraints)):
+                    queue.append((x_k, x_i))
         return True
 
     def revise(self, x_i: Var, x_j: Var, inferences):
         revised = False
+        # performance gain
+        if 0 not in x_j.removed_domain:
+            return False
+        # performance gain
         for x in x_i.real_domain():
             if self.no_value_satisfies(x_i, x, x_j):
                 # print('r: %d c: %d r1: %d c1: %d type: %d type1: %d, val: %d' % (x_i.r, x_i.c, x_j.r, x_j.c, x_i.type, x_j.type, x))
@@ -201,13 +208,16 @@ class Csp():
                 # print(x_j.real_domain())
 
                 inferences.append(Inference(x_i, x))
-                x_i.removed_domain.append(x)
+                x_i.removed_domain.add(x)
                 revised = True
         return revised
 
     def no_value_satisfies(self, x_i: Var, val: int, x_j: Var):
         for i in x_j.real_domain():
-            if val == 0 or i == 0:
+            # depending on performance gain section in revise
+            # if val == 0 or i == 0:
+                # return False
+            if val == 0:
                 return False
             if self.is_match(x_i,x_j,val,i):
                 return False

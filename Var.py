@@ -16,15 +16,16 @@ class Var():
         self.r = r
         self.c = c
         self.type = type
-        self.removed_domain = []
+        self.removed_domain = set()
 
     def remaining(self):
-        return len(self.domain) - len(self.removed_domain)
+        # 3 is len(domain)
+        return 3 - len(self.removed_domain)
 
     def second_block(self):
         if self.type == 0:
             return (self.r, self.c+1) 
-        elif self.type == 1:
+        elif self:
             return (self.r+1, self.c)
         return None
 

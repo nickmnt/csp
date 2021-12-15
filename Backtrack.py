@@ -66,10 +66,14 @@ class BackTrack():
 
             if r < n:
                 min = var
-                if min.remaining() == 1:
+                if r == 1:
                     return min
-            #else if r= n
+            # elif r==n:
+            #     d1 = len(list(filter(lambda x : x in unassigned , var.constraints)))
+            #     d2 = len(list(filter(lambda x : x in unassigned , min.constraints)))
 
+            #     if d1 > d2:
+            #         min = var
         return min
                 
     def complete(self, assignment: Assignment):
