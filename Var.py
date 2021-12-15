@@ -10,6 +10,7 @@ class Var():
     value = -100
     domain = [0,1,-1]
     removed_domain = None
+    constraints = None
 
     def __init__(self,r,c,type):
         self.r = r
@@ -52,3 +53,16 @@ class Var():
             elif charge == -1:
                 if -1 not in self.removed_domain:
                     inferences.append(Inference(self, -1))
+
+    def real_domain(self):
+        return list(filter(lambda x: x not in self.removed_domain, [0,1,-1]))
+
+    def __neighbor(r, c, r1, c1):
+        return (r == r1 and abs(c - c1) == 1) or (c == c1 and abs(r - r1) == 1)
+
+    def first_neighbor(self, r,c):
+        return Var.__neighbor(self.r, self.c, r, c)
+
+    def second_neighbor(self, r, c):
+        r1, c1 = self.second_block()
+        return Var.__neighbor(r1,c1, r, c)

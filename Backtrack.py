@@ -38,12 +38,17 @@ class BackTrack():
             if self.consistent(var, value, assignment):
                 self.csp.append(var, value)
                 inferences = self.inference(var,value, assignment)
-                if inferences != 'failure':
-                    self.csp.append_inferences(inferences)
+                t = type(inferences)
+                if t is list:
+                    # self.csp.append_inferences(inferences)
                     result = self.backtrack(assignment)
                     if result != 'failure':
                         return result
                     self.csp.remove_inferences(inferences)
+                
+                # if t is tuple:
+                #     m, i = inferences
+                #     self.csp.remove_inferences(i)
                 self.csp.remove(var, value)
         return 'failure'
 
@@ -111,9 +116,9 @@ class BackTrack():
 
         # It blocks some
         inferences = []
-        self.csp.claim(var.r, var.c, inferences)
+        self.csp.claim(var.r, var.c, value, inferences)
         r1,c1 = var.second_block()
-        self.csp.claim(r1,c1, inferences)
+        # self.csp.claim(r1,c1, inferences)
         # It stops some from being same charge
         if value != 0:
             self.csp.claim_charge(var.r, var.c, value, inferences)
@@ -237,5 +242,13 @@ class BackTrack():
                                 inferences.append(Inference(self.csp.mp[i][j], -1))
                             if 0 not in self.csp.mp[i][j].removed_domain:
                                 inferences.append(Inference(self.csp.mp[i][j], 0))
+
+        if not self.csp.append_inferences(inferences):
+            self.csp.remove_inferences(inferences)
+            return 'failure'
+
+        if not self.csp.ac3(inferences):
+            self.csp.remove_inferences(inferences)
+            return 'failure'
 
         return inferences
