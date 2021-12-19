@@ -16,7 +16,7 @@ class Var():
         self.r = r
         self.c = c
         self.type = type
-        self.removed_domain = set()
+        self.removed_domain = [False, False, False]
 
     def remaining(self):
         # 3 is len(domain)
@@ -42,21 +42,21 @@ class Var():
 
         if r1 == r and c1 == c:
             if charge == 1:
-                if -1 not in self.removed_domain:
+                if not self.removed_domain[-1+1]:
                     inferences.append(Inference(self, -1))
             elif charge == -1:
-                if 1 not in self.removed_domain:
+                if not self.removed_domain[1+1]:
                     inferences.append(Inference(self, 1))
         else:
             if charge == 1:
-                if 1 not in self.removed_domain:
+                if not self.removed_domain[1+1]:
                     inferences.append(Inference(self, 1))
             elif charge == -1:
-                if -1 not in self.removed_domain:
+                if not self.removed_domain[-1+1]:
                     inferences.append(Inference(self, -1))
 
     def real_domain(self):
-        return list(filter(lambda x: x not in self.removed_domain, [0,1,-1]))
+        return list(filter(lambda x: not self.removed_domain[x+1], [0,1,-1]))
 
     def __neighbor(r, c, r1, c1):
         return (r == r1 and abs(c - c1) == 1) or (c == c1 and abs(r - r1) == 1)

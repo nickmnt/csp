@@ -32,7 +32,7 @@ class Csp():
         var = self.mp[r][c]
         for i in var.domain:
             if i != value:
-                if i not in var.removed_domain:
+                if not var.removed_domain[i+1]:
                     inferences.append(Inference(var, i))
 
     def claim_charge(self, r, c, charge, inferences: list):
@@ -72,9 +72,15 @@ class Csp():
 
     def append_inferences(self, inferences: "list[Inference]"):
         for i in inferences:
-            if i.val not in i.var.removed_domain:
-                i.var.removed_domain.add(i.val)
-                if len(i.var.removed_domain) == 3:
+            if not i.var.removed_domain[i.val+1]:
+                i.var.removed_domain[i.val+1] = True
+                
+                no_choice = True
+                for i in i.var.removed_domain:
+                    if i is False:
+                        no_choice = False
+                        break
+                if no_choice:
                     return False
         return True
 
@@ -90,8 +96,7 @@ class Csp():
 
     def remove_inferences(self, inferences: "list[Inference]"):
         for i in inferences:
-            if i.val in i.var.removed_domain:
-                i.var.removed_domain.remove(i.val)
+            i.var.removed_domain[i.val+1] = False
 
     def print(self):
         for i in range(self.rows):
@@ -189,7 +194,12 @@ class Csp():
                continue
             # performance gain
             if self.revise(x_i, x_j, inferences):
-                if len(x_i.removed_domain) == 3:
+                no_choice = True
+                for i in x_i.removed_domain:
+                    if i is False:
+                        no_choice = False
+                        break
+                if no_choice:
                     return False
                 for x_k in list(filter(lambda x_k: x_k is not x_j and x_k.value != 0, x_i.constraints)):
                     queue.append((x_k, x_i))
@@ -198,7 +208,7 @@ class Csp():
     def revise(self, x_i: Var, x_j: Var, inferences):
         revised = False
         # performance gain
-        if 0 not in x_j.removed_domain:
+        if not x_j.removed_domain[0+1]:
             return False
         # performance gain
         for x in x_i.real_domain():
@@ -208,7 +218,7 @@ class Csp():
                 # print(x_j.real_domain())
 
                 inferences.append(Inference(x_i, x))
-                x_i.removed_domain.add(x)
+                x_i.removed_domain[x+1] = True
                 revised = True
         return revised
 
