@@ -1,7 +1,7 @@
 from Backtrack import BackTrack
 from Csp import Csp
 from Var import Var
-
+import datetime
 
 if __name__ == "__main__":
     nums = [int(x) for x in input().split()]
@@ -58,9 +58,12 @@ if __name__ == "__main__":
 
     csp = Csp(rows, cols, row_vals, col_vals, row_nvals, col_nvals, data, mp, variables)
     backtrack = BackTrack(csp)
+    a = datetime.datetime.now()
     print()
     if backtrack.search() != 'failure':
         csp.print()
     else:
         print('failure')
+    b = datetime.datetime.now()
+    print(b-a)
 

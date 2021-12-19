@@ -74,7 +74,7 @@ class Csp():
         for i in inferences:
             if i.val not in i.var.removed_domain:
                 i.var.removed_domain.add(i.val)
-                if len(i.var.removed_domain) == 3 and i.var.value == -100:
+                if len(i.var.removed_domain) == 3:
                     return False
         return True
 
