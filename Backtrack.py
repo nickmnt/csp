@@ -37,7 +37,12 @@ class BackTrack():
         for value in self.order_domain_values(var, assignment):
             if self.consistent(var, value, assignment):
                 self.csp.append(var, value)
-                inferences = self.inference(var,value, assignment)
+                if len(var.real_domain()) == 1:
+                    inferences = self.inference(var,value,assignment, True)
+                else:
+                    #PERFORMANCE IMPROVEMENT
+                    inferences = self.inference(var,value, assignment, False)
+
                 t = type(inferences)
                 if t is list:
                     # self.csp.append_inferences(inferences)
@@ -57,13 +62,20 @@ class BackTrack():
         if len(unassigned) == 0:
             return None
         min = unassigned[0]
+        min.remain = min.remaining()
+
+        # unassigned.sort(key= lambda x: x.remaining())
+
+        # return unassigned[0]
+        # return min
 
         for var in unassigned:
-            if var == min:
-                continue
-            r = var.remaining()
-            n = min.remaining()
-
+            # if var == min:
+                # continue
+            var.remain = var.remaining()
+            r = var.remain
+            n = min.remain
+            
             if r < n:
                 min = var
                 if r == 1:
@@ -115,7 +127,7 @@ class BackTrack():
     def consistent(self, var: Var, value, assignment: Assignment):
         return True
         
-    def inference(self, var: Var, value, assignment):
+    def inference(self, var: Var, value, assignment, use_ac3):
 
 
         # It blocks some
@@ -128,15 +140,7 @@ class BackTrack():
             self.csp.claim_charge(var.r, var.c, value, inferences)
             self.csp.claim_charge(r1,c1, -1*value, inferences)
 
-        rows = set()
-        cols = set()
-        for i in inferences:
-            rows.add(i.var.r)
-            cols.add(i.var.c)
-        self.rows = rows
-        self.cols = cols
-
-        for i in self.rows:
+        for i in [var.r, r1]:
             plus_sum = 0
             neg_sum = 0
             plus_candids = 0
@@ -164,6 +168,22 @@ class BackTrack():
                 return 'failure'
             if self.csp.row_nvals[i] - neg_sum > neg_candids:
                 return 'failure'
+            if plus_sum == self.csp.row_vals[i]:
+                for j in range(0, self.csp.cols):
+                    if self.csp.data[i][j] != '+' and self.csp.data[i][j] != '-':
+                        if self.csp.data[i][j] == 'l' or self.csp.data[i][j] == 'u':
+                            if not self.csp.mp[i][j].removed_domain[1+1]:
+                                inferences.append(Inference(self.csp.mp[i][j], 1))
+                        elif not self.csp.mp[i][j].removed_domain[-1+1]:
+                                inferences.append(Inference(self.csp.mp[i][j], -1))
+            if neg_sum == self.csp.row_nvals[i]:
+                for j in range(0, self.csp.cols):
+                    if self.csp.data[i][j] != '+' and self.csp.data[i][j] != '-':
+                        if self.csp.data[i][j] == 'l' or self.csp.data[i][j] == 'u':
+                            if not self.csp.mp[i][j].removed_domain[-1+1]:
+                                inferences.append(Inference(self.csp.mp[i][j], -1))
+                        elif not self.csp.mp[i][j].removed_domain[1+1]:
+                                inferences.append(Inference(self.csp.mp[i][j], 1))
             exact_plus = self.csp.row_vals[i] - plus_sum == plus_candids
             exact_neg = self.csp.row_nvals[i] - neg_sum == neg_candids
             if exact_plus or exact_neg:
@@ -192,7 +212,7 @@ class BackTrack():
                                 inferences.append(Inference(self.csp.mp[i][j], 0))
 
         #Like before, just do it for columns
-        for j in self.cols:
+        for j in [var.c, c1]:
             plus_sum = 0
             neg_sum = 0
             plus_candids = 0
@@ -216,6 +236,22 @@ class BackTrack():
                 return 'failure'
             if neg_sum > self.csp.col_nvals[j]:
                 return 'failure'
+            if plus_sum == self.csp.col_vals[j]:
+                for i in range(0, self.csp.rows):
+                    if self.csp.data[i][j] != '+' and self.csp.data[i][j] != '-':
+                        if self.csp.data[i][j] == 'l' or self.csp.data[i][j] == 'u':
+                            if not self.csp.mp[i][j].removed_domain[1+1]:
+                                inferences.append(Inference(self.csp.mp[i][j], 1))
+                        elif not self.csp.mp[i][j].removed_domain[-1+1]:
+                                inferences.append(Inference(self.csp.mp[i][j], -1))
+            if neg_sum == self.csp.col_nvals[j]:
+                for i in range(0, self.csp.rows):
+                    if self.csp.data[i][j] != '+' and self.csp.data[i][j] != '-':
+                        if self.csp.data[i][j] == 'l' or self.csp.data[i][j] == 'u':
+                            if not self.csp.mp[i][j].removed_domain[-1+1]:
+                                inferences.append(Inference(self.csp.mp[i][j], -1))
+                        elif not self.csp.mp[i][j].removed_domain[1+1]:
+                                inferences.append(Inference(self.csp.mp[i][j], 1))
             if self.csp.col_vals[j] - plus_sum > plus_candids:
                 return 'failure'
             if self.csp.col_nvals[j] - neg_sum > neg_candids:
@@ -251,7 +287,7 @@ class BackTrack():
             self.csp.remove_inferences(inferences)
             return 'failure'
 
-        if not self.csp.ac3(inferences):
+        if use_ac3 and not self.csp.ac3(inferences):
             self.csp.remove_inferences(inferences)
             return 'failure'
 

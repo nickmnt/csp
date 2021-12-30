@@ -190,7 +190,7 @@ class Csp():
         while len(queue) != 0:
             x_i, x_j = queue.pop()
             # performance gain
-            if x_i.value != 0:
+            if x_i.value == 0:
                continue
             # performance gain
             if self.revise(x_i, x_j, inferences):
@@ -201,7 +201,7 @@ class Csp():
                         break
                 if no_choice:
                     return False
-                for x_k in list(filter(lambda x_k: x_k is not x_j and x_k.value != 0, x_i.constraints)):
+                for x_k in list(filter(lambda x_k: x_k is not x_j, x_i.constraints)):
                     queue.append((x_k, x_i))
         return True
 
@@ -210,6 +210,8 @@ class Csp():
         # performance gain
         if not x_j.removed_domain[0+1]:
             return False
+        # if x_i.real_domain() == [0]:
+            # return False
         # performance gain
         for x in x_i.real_domain():
             if self.no_value_satisfies(x_i, x, x_j):

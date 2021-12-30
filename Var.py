@@ -20,7 +20,7 @@ class Var():
 
     def remaining(self):
         # 3 is len(domain)
-        return 3 - len(self.removed_domain)
+        return len(self.real_domain())
 
     def second_block(self):
         if self.type == 0:
@@ -35,7 +35,7 @@ class Var():
 
     def same_row(self):
         r1,c1 = self.second_block()
-        return c1 == self.r
+        return r1 == self.r
 
     def revoke_charge_claim(self, r, c, charge, inferences: list):
         r1, c1 = self.second_block()
