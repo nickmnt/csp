@@ -1,7 +1,15 @@
 from Inference import Inference
 from Var import Var
 
-
+# THIS CLASS IS USELESS!!
+# WAS IN PREVIOUS VERSIONS, REMOVED NOW!!!!
+# USELESS!!
+# USELESS!!
+# USELESS!!
+# USELESS!!
+# USELESS!!
+# USELESS!!
+# USELESS!!
 class Assignment(): 
     rows = -1
     cols = -1

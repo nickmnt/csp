@@ -25,7 +25,7 @@ class Var():
     def second_block(self):
         if self.type == 0:
             return (self.r, self.c+1) 
-        elif self:
+        elif self.type == 1:
             return (self.r+1, self.c)
         return None
 

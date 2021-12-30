@@ -101,7 +101,10 @@ class Csp():
     def print(self):
         for i in range(self.rows):
             for j in range(self.cols):
-                print(self.data[i][j], end=' ')
+                x = self.data[i][j]
+                if x == 'u' or x == 'l' or x == 'd' or x == 'r':
+                    x = 'e'
+                print(x, end=' ')
             print()
         print()
 
